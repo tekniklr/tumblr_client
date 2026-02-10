@@ -1,5 +1,6 @@
 require 'faraday'
-require 'faraday_middleware'
+require 'faraday/oauth1'
+require 'faraday/multipart'
 
 module Tumblr
   module Connection
@@ -18,9 +19,9 @@ module Tumblr
       client = Faraday.default_adapter
 
       Faraday.new(default_options.merge(options)) do |conn|
-        data = { :api_host => api_host, :ignore_extra_keys => true}.merge(credentials)
+        oauth_params = { ignore_extra_keys: true }.merge(credentials)
         unless credentials.empty?
-          conn.request :oauth, data
+          conn.request :oauth1, "param", **oauth_params
         end
         conn.request :multipart
         conn.request :url_encoded
