@@ -5,28 +5,19 @@ require 'faraday/multipart'
 module Tumblr
   module Connection
 
-    def connection(options={})
-      options = options.clone
-
-      default_options = {
-        :headers => {
-          :accept => 'application/json',
-          :user_agent => "tumblr_client/#{Tumblr::VERSION}"
-        },
-        :url => "#{api_scheme}://#{api_host}/"
-      }
-
-      client = Faraday.default_adapter
-
-      Faraday.new(default_options.merge(options)) do |conn|
-        oauth_params = { ignore_extra_keys: true }.merge(credentials)
+    def connection
+      Faraday.new(url: "#{api_scheme}://#{api_host}/") do |conn|
         unless credentials.empty?
-          conn.request :oauth1, "param", **oauth_params
+          conn.request :oauth1, "header", **credentials
         end
         conn.request :multipart
         conn.request :url_encoded
-        conn.response :json, :content_type => /\bjson$/
-        conn.adapter client
+        conn.response :json, content_type: /\bjson$/
+        conn.adapter Faraday.default_adapter
+        conn.headers.update({
+          accept: 'application/json',
+          user_agent: "tumblr_client/#{Tumblr::VERSION}"
+        })
       end
     end
 

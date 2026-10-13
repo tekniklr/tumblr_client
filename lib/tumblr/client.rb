@@ -42,8 +42,8 @@ module Tumblr
       {
         :consumer_key => @consumer_key,
         :consumer_secret => @consumer_secret,
-        :access_token => @oauth_token,
-        :access_token_secret => @oauth_token_secret
+        :token => @oauth_token,
+        :token_secret => @oauth_token_secret
       }
     end
 
